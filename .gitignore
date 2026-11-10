@@ -1,0 +1,6 @@
+# Texto extraído de los documentos originales: no se publica.
+fuente/
+HANDOFF.md
+node_modules/
+.DS_Store
+*.log

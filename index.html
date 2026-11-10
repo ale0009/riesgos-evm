@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Control de proyectos TIC</title>
+  <meta name="description" content="Tablero de riesgos con matriz de calor y simulador de valor ganado (EVM) construidos a partir de trabajos académicos de Ingeniería de Sistemas.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilo.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' fill='%23F9F9F7' stroke='%230A090A' stroke-width='3'/%3E%3Cpath d='M8 24 L14 14 L19 19 L25 8' fill='none' stroke='%23CB433E' stroke-width='3.5'/%3E%3C/svg%3E">
+  <script>
+    // Aplica el tema guardado antes de pintar, para evitar el parpadeo.
+    try { const t = localStorage.getItem("tema"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+</head>
+<body>
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+
+  <header class="cabecera">
+    <div class="envoltura cabecera__fila">
+      <p class="marca"><span class="marca__sello" aria-hidden="true">TIC</span> Control de proyectos</p>
+      <nav aria-label="Secciones">
+        <ul class="menu">
+          <li><a href="#riesgos">Riesgos</a></li>
+          <li><a href="#evm">Valor ganado</a></li>
+          <li><a href="#erratas">Fe de erratas</a></li>
+        </ul>
+      </nav>
+      <button class="boton boton--icono" id="tema" type="button" aria-pressed="false">
+        <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg>
+        <span id="tema-texto">Modo oscuro</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <section class="portada envoltura" aria-labelledby="titulo">
+      <div class="vineta vineta--portada">
+        <p class="sobretitulo">Muestra de portafolio · Gerencia de proyectos</p>
+        <h1 id="titulo">Control de proyectos <span class="tinta-roja">TIC</span></h1>
+        <p class="entradilla">Dos herramientas construidas con los datos de trabajos académicos reales: un <strong>tablero de riesgos</strong> con matriz de calor y un <strong>simulador de valor ganado</strong> que recalcula los indicadores mientras mueves el avance y el costo de cada sprint.</p>
+        <dl class="glosario-mini">
+          <div><dt>Riesgo</dt><dd>evento incierto que, si ocurre, afecta el alcance, el tiempo o el costo.</dd></div>
+          <div><dt>P × I</dt><dd>probabilidad por impacto, cada una de 1 a 5: mide la severidad.</dd></div>
+          <div><dt>EVM</dt><dd><span lang="en">Earned Value Management</span>: compara lo planeado, lo entregado y lo gastado.</dd></div>
+        </dl>
+      </div>
+      <p class="onomatopeya onomatopeya--portada" aria-hidden="true">¡PLAN!</p>
+    </section>
+
+    <!-- ===================== A. TABLERO DE RIESGOS ===================== -->
+    <section id="riesgos" class="envoltura seccion" aria-labelledby="t-riesgos">
+      <header class="seccion__cabecera">
+        <p class="capitulo" aria-hidden="true">Herramienta A</p>
+        <h2 id="t-riesgos">Tablero de riesgos</h2>
+        <p>Elige un caso, filtra y toca una celda de la matriz para ver el detalle de cada riesgo.</p>
+      </header>
+
+      <fieldset class="selector-caso">
+        <legend>Caso de estudio</legend>
+        <div class="segmentado" id="casos"></div>
+      </fieldset>
+      <p class="caso-sub" id="caso-sub"></p>
+
+      <div class="barra-filtros">
+        <label>Categoría
+          <select id="f-categoria"></select>
+        </label>
+        <label>Estrategia
+          <select id="f-estrategia"></select>
+        </label>
+        <button type="button" class="boton boton--texto" id="f-limpiar">Quitar filtros</button>
+        <p class="conteo" id="conteo" aria-live="polite"></p>
+      </div>
+
+      <div class="rejilla-riesgos">
+        <figure class="vineta matriz-vineta">
+          <figcaption>
+            <h3>Matriz de calor P × I</h3>
+            <p class="nota" id="escala-nota"></p>
+          </figcaption>
+          <div class="matriz" id="matriz" role="group" aria-label="Matriz de calor de probabilidad por impacto"></div>
+          <ul class="leyenda" id="leyenda"></ul>
+        </figure>
+
+        <aside class="vineta detalle" id="detalle" aria-live="polite" tabindex="-1">
+          <p class="detalle__vacio">Toca una celda de la matriz o una fila del registro.</p>
+        </aside>
+      </div>
+
+      <div class="vineta registro-vineta">
+        <h3 id="t-registro">Registro de riesgos</h3>
+        <table class="registro" aria-labelledby="t-registro">
+          <thead>
+            <tr>
+              <th scope="col">Código</th>
+              <th scope="col">Riesgo</th>
+              <th scope="col" class="col-ancha">Categoría</th>
+              <th scope="col"><abbr title="Probabilidad">P</abbr></th>
+              <th scope="col"><abbr title="Impacto">I</abbr></th>
+              <th scope="col">P×I</th>
+              <th scope="col">Nivel</th>
+              <th scope="col" class="col-ancha">Estrategia</th>
+            </tr>
+          </thead>
+          <tbody id="registro"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================== B. SIMULADOR EVM ===================== -->
+    <section id="evm" class="envoltura seccion" aria-labelledby="t-evm">
+      <header class="seccion__cabecera">
+        <p class="capitulo" aria-hidden="true">Herramienta B</p>
+        <h2 id="t-evm">Simulador de valor ganado</h2>
+        <p>Proyecto ágil de un módulo de pedidos y trazabilidad para una empresa logística (caso didáctico): <strong>24 puntos de historia</strong> (SP, <span lang="en">Story Points</span>: medida relativa del esfuerzo), velocidad de <strong>8 por sprint</strong>, <strong>3 sprints</strong> de 5.800 USD cada uno. Presupuesto total (BAC, <span lang="en">Budget at Completion</span>: lo aprobado para todo el proyecto): <strong>17.400 USD</strong>.</p>
+      </header>
+
+      <div class="rejilla-evm">
+        <form class="vineta controles" id="controles" aria-labelledby="t-controles" onsubmit="return false">
+          <h3 id="t-controles">Lo que pasó en cada sprint</h3>
+          <fieldset class="corte">
+            <legend>Corte: ¿hasta qué sprint has ejecutado?</legend>
+            <div class="segmentado" id="corte"></div>
+          </fieldset>
+          <div id="sprints"></div>
+          <div class="escenarios">
+            <button type="button" class="boton" data-escenario="fuente">Escenario de la fuente</button>
+            <button type="button" class="boton boton--claro" data-escenario="plan">Todo según el plan</button>
+          </div>
+          <p class="nota" id="nota-escenario"></p>
+        </form>
+
+        <div class="vineta resultados">
+          <div class="resultados__cabecera">
+            <h3>Indicadores al corte</h3>
+            <p class="onomatopeya onomatopeya--evm" id="evm-grito" aria-hidden="true"></p>
+          </div>
+          <p class="diagnostico" id="diagnostico" aria-live="polite"></p>
+          <dl class="kpis" id="kpis"></dl>
+        </div>
+      </div>
+
+      <figure class="vineta grafica-vineta">
+        <figcaption>
+          <h3>Curvas S: planeado, ganado y gastado</h3>
+          <p class="nota">Valores acumulados en USD al cierre de cada sprint. Las líneas horizontales marcan el presupuesto (BAC) y la proyección del costo final (EAC).</p>
+        </figcaption>
+        <div id="grafica"></div>
+        <details class="datos-grafica">
+          <summary>Ver los datos de la gráfica</summary>
+          <table class="tabla-datos">
+            <thead><tr><th scope="col">Sprint</th><th scope="col">PV</th><th scope="col">EV</th><th scope="col">AC</th><th scope="col">SP acumulados</th></tr></thead>
+            <tbody id="tabla-grafica"></tbody>
+          </table>
+        </details>
+      </figure>
+    </section>
+
+    <!-- ===================== FE DE ERRATAS ===================== -->
+    <section id="erratas" class="envoltura seccion" aria-labelledby="t-erratas">
+      <header class="seccion__cabecera">
+        <p class="capitulo" aria-hidden="true">Nota al margen</p>
+        <h2 id="t-erratas">Fe de erratas del caso</h2>
+        <p>Al pasar los documentos a una herramienta que recalcula todo, aparecieron detalles que conviene mostrar en vez de esconder.</p>
+      </header>
+      <ol class="erratas">
+        <li class="vineta"><h3>Caso de riesgos: «seis categorías» que son siete</h3><p>El texto dice que los doce riesgos se reparten en <em>seis</em> categorías, pero enumera siete y el registro también tiene siete: organizacional, técnico, recursos, cronograma, presupuesto, alcance y legal/regulatorio. El tablero usa las siete.</p></li>
+        <li class="vineta"><h3>Caso de riesgos: el responsable de R03 cambia de nombre</h3><p>En el registro el responsable es «Equipo de Ingeniería de Red»; en el plan de respuesta, «Equipo de Ingeniería». Se muestra el nombre del registro.</p></li>
+        <li class="vineta"><h3>Caso de riesgos: no hay riesgo residual</h3><p>Ninguno de los dos casos estima la probabilidad y el impacto <em>después</em> de aplicar la respuesta. Por eso el simulador «¿qué pasa si…?» no inventa ese dato: deja que tú propongas una hipótesis y la rotula como tuya.</p></li>
+        <li class="vineta"><h3>Caso de riesgos: causa y efecto no van por separado</h3><p>La fuente documenta la descripción, el disparador (señal temprana) y la contingencia, pero no separa causa y efecto. El detalle muestra lo que hay.</p></li>
+        <li class="vineta"><h3>EVM: porcentajes truncados en la línea base</h3><p>La tabla de valor planificado pone 33 % y 66 %. Los valores exactos son 33,3 % (8/24) y 66,7 % (16/24). Los montos en USD sí son correctos.</p></li>
+        <li class="vineta"><h3>EVM: «18,8 % más rápido» no es lo mismo que 1 − CPI</h3><p>Un CPI de 0,812 significa que cada dólar produce 0,812 de valor (18,8 % menos). Dicho al revés, cada dólar de valor está costando 1/0,812 = 1,232, es decir, se gasta un <strong>23,2 %</strong> más de lo planeado: la misma cifra que la propia fuente da para el sobrecosto proyectado.</p></li>
+        <li class="vineta"><h3>EVM: la variante «EAC = BAC / SPI» no es una fórmula del PMI</h3><p>La fuente la presenta como variante (19.886 USD). Las alternativas habituales son EAC = AC + (BAC − EV) / (CPI × SPI), que aquí da <strong>22.704 USD</strong>, o EAC = AC + (BAC − EV) si la desviación se considera puntual (19.750 USD). El simulador usa la recomendada por la fuente, EAC = BAC / CPI, y muestra la de CPI × SPI como referencia.</p></li>
+        <li class="vineta"><h3>EVM: el reparto por sprint es un supuesto de esta demo</h3><p>La fuente solo informa el acumulado al cierre del Sprint 2 (14 puntos y 12.500 USD). Para poder mover cada sprint, el escenario inicial lo reparte en partes iguales (7 puntos y 6.250 USD por sprint). Los indicadores al corte coinciden exactamente con los de la fuente.</p></li>
+      </ol>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <div class="envoltura">
+      <p class="creditos">Trabajos académicos de Mario Puerta y David Rincón «Kuronoma» (Ingeniería de Sistemas, Universidad ECCI). <a href="https://www.linkedin.com/in/davidalexanderrinconcorredorkuronoma/" rel="noopener">David Rincón «Kuronoma» en LinkedIn</a>.</p>
+      <p class="nota">Los nombres de las organizaciones de los casos se anonimizaron. Marcos de referencia: PMBOK 7.ª ed. (PMI), ISO 31000:2018 y Scrum. Código bajo licencia MIT.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "riesgos-evm",
+  "version": "1.0.0",
+  "description": "Control de proyectos TIC: tablero de riesgos y simulador de valor ganado (EVM). Página estática sin build.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "author": "Mario Alejandro Puerta Alarcón",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
