@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cómo se hizo · Control de proyectos TIC</title>
+  <meta name="description" content="Cómo se pasó de dos trabajos de clase (riesgos con PMI e ISO 31000 y un ejercicio de valor ganado) a un tablero de riesgos y un simulador EVM: fórmulas, matriz P × I, erratas, decisiones y fuentes.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/estilo.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' fill='%23F9F9F7' stroke='%230A090A' stroke-width='3'/%3E%3Cpath d='M8 24 L14 14 L19 19 L25 8' fill='none' stroke='%23CB433E' stroke-width='3.5'/%3E%3C/svg%3E">
+  <script>
+    // Aplica el tema guardado antes de pintar, para evitar el parpadeo.
+    try { const t = localStorage.getItem("tema"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+  <script type="module" src="../js/proceso.js"></script>
+</head>
+<body class="pagina-proceso">
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+
+  <header class="cabecera">
+    <div class="envoltura cabecera__fila">
+      <p class="marca"><span class="marca__sello" aria-hidden="true">TIC</span> Cómo se hizo</p>
+      <nav aria-label="Navegación">
+        <ul class="menu">
+          <li><a href="../">Volver a la herramienta</a></li>
+        </ul>
+      </nav>
+      <button class="boton boton--icono" id="tema" type="button" aria-pressed="false">
+        <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg>
+        <span id="tema-texto">Modo oscuro</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <section class="portada envoltura" aria-labelledby="titulo">
+      <div class="vineta vineta--portada">
+        <p class="sobretitulo">Proceso · Control de proyectos TIC</p>
+        <h1 id="titulo">Cómo se <span class="tinta-roja">hizo</span></h1>
+        <p class="entradilla">De tres documentos de clase a dos herramientas que recalculan todo: qué decían los trabajos, cómo se llevaron a código sin inventar cifras, qué fórmulas usa cada indicador y qué incoherencias aparecieron por el camino.</p>
+      </div>
+      <p class="kanji-proceso" aria-hidden="true">工程</p>
+    </section>
+
+    <div class="envoltura articulo">
+      <nav class="vineta indice" aria-label="En esta página">
+        <ol>
+          <li><a href="#caso">El caso de clase</a></li>
+          <li><a href="#metodo">Del documento a la herramienta</a></li>
+          <li><a href="#matriz">La matriz P × I</a></li>
+          <li><a href="#evm">Las fórmulas EVM</a></li>
+          <li><a href="#erratas">Fe de erratas</a></li>
+          <li><a href="#diseno">Decisiones de diseño</a></li>
+          <li><a href="#limites">Limitaciones</a></li>
+          <li><a href="#fuentes">Fuentes</a></li>
+        </ol>
+      </nav>
+
+      <!-- 1 · CASO -->
+      <section id="caso" class="bloque" aria-labelledby="t-caso">
+        <p class="capitulo" aria-hidden="true">Capítulo 1</p>
+        <h2 id="t-caso">El caso de clase</h2>
+        <p>La herramienta sale de tres trabajos de Ingeniería de Sistemas (Universidad ECCI, 2026), de las asignaturas de gerencia y de gestión y evaluación de proyectos de TI. Los nombres de las organizaciones se anonimizaron.</p>
+        <div class="tarjetas">
+          <article class="vineta">
+            <h3>Riesgos · caso 1</h3>
+            <p>Plan de gestión de riesgos con el <strong>PMBOK 7.ª ed.</strong> y la <strong>ISO 31000:2018</strong> para un proveedor regional de servicios gestionados y centros de datos. El proyecto: formalizar el aprovisionamiento y la activación del monitoreo de red para clientes empresariales.</p>
+            <p class="nota">12 riesgos · escala de 3 niveles · disparador, responsable, respuesta, contingencia y 7 indicadores.</p>
+          </article>
+          <article class="vineta">
+            <h3>Riesgos · caso 2</h3>
+            <p>Taller de matriz de riesgos para un <strong>sistema web de gestión académica</strong>: cuatro meses, cinco desarrolladores, presupuesto limitado y requisitos poco definidos, con Scrum.</p>
+            <p class="nota">12 riesgos · escala de 4 niveles (con «Crítico») · estrategia y acciones.</p>
+          </article>
+          <article class="vineta">
+            <h3>Valor ganado (EVM)</h3>
+            <p>Ejercicio de control de costos sobre un desarrollo ágil para una empresa logística (caso didáctico): un módulo de pedidos y trazabilidad de <strong>24 puntos de historia</strong>, 3 sprints de 5.800 USD y un corte al Sprint 2.</p>
+            <p class="nota">EVM (<span lang="en">Earned Value Management</span>, gestión del valor ganado): compara lo planeado, lo entregado y lo gastado.</p>
+          </article>
+        </div>
+        <p>Los documentos eran buenos para entregar, pero estáticos: una tabla dice «R04 es Alto» o «CPI = 0,812» y ahí se queda. La pregunta fue: <strong>¿qué pasa si muevo un dato?</strong> Si el equipo entrega un punto más, si el costo baja, si aplico la respuesta a un riesgo. Para eso hacía falta llevar las tablas a código.</p>
+      </section>
+
+      <!-- 2 · MÉTODO -->
+      <section id="metodo" class="bloque" aria-labelledby="t-metodo">
+        <p class="capitulo" aria-hidden="true">Capítulo 2</p>
+        <h2 id="t-metodo">Del documento a la herramienta</h2>
+        <ol class="tuberia" aria-label="Pasos del proceso">
+          <li><span class="paso">1</span><strong>Extraer</strong><small>texto de los .docx, con las empresas y los datos personales anonimizados; ese texto no se publica</small></li>
+          <li><span class="paso">2</span><strong>Transcribir</strong><small>cada tabla a <code>js/datos.js</code>, sin inventar ni redondear cifras</small></li>
+          <li><span class="paso">3</span><strong>Calcular</strong><small>funciones puras en <code>js/riesgos.js</code> y <code>js/evm.js</code></small></li>
+          <li><span class="paso">4</span><strong>Contrastar</strong><small>pruebas que exigen los mismos resultados que publica la fuente</small></li>
+          <li><span class="paso">5</span><strong>Dibujar</strong><small>matriz, registro, deslizadores y curvas S en SVG propio</small></li>
+        </ol>
+        <div class="dos-col">
+          <div>
+            <h3>Cada riesgo guarda el nivel que le puso el documento</h3>
+            <p>Además de P e I, cada riesgo conserva el nivel declarado por la fuente (<code>nivelFuente</code>). La herramienta recalcula el nivel con P × I y la escala del caso, y una prueba compara ambos: <strong>los 24 riesgos coinciden</strong>. Si alguien cambia un dato y rompe esa coincidencia, la prueba falla.</p>
+            <h3>El EVM se prueba contra el ejercicio</h3>
+            <p>Las pruebas de <code>test/evm.test.js</code> exigen PV 11.600, EV 10.150, AC 12.500, CV −2.350, SV −1.450, CPI 0,812, SPI 0,875 y EAC 21.428,57 USD: exactamente lo que publica el ejercicio. En total hay 16 pruebas con <code>node --test</code>.</p>
+          </div>
+          <div>
+            <h3>Celdas que el extractor «pegó»</h3>
+            <p>En el texto extraído algunas filas de la matriz aparecían como «4 | 16», con un valor de menos. Al revisar el documento original se confirmó que eran dos celdas iguales que el extractor fusionó (P = I = 4), no un error del trabajo.</p>
+            <h3>Lo que la fuente no trae, no se inventa</h3>
+            <p>Si un dato no está en el documento, la herramienta lo pide al visitante y lo rotula como hipótesis (el riesgo residual), o lo declara como supuesto de la demo (el reparto por sprint). Lo calculado en esta página se marca como «calculado aquí».</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3 · MATRIZ -->
+      <section id="matriz" class="bloque" aria-labelledby="t-matriz">
+        <p class="capitulo" aria-hidden="true">Capítulo 3</p>
+        <h2 id="t-matriz">La matriz probabilidad × impacto</h2>
+        <p>Cada riesgo recibe una <strong>probabilidad</strong> (P, de 1 a 5) y un <strong>impacto</strong> (I, de 1 a 5). Su severidad es el producto <code>P × I</code>, de 1 a 25, y el nivel sale de comparar ese número con los tramos de la escala de cada caso. En el caso 1 la escala está definida en palabras: P va de <em>Raro</em> (menos del 10 %) a <em>Casi seguro</em> (más del 70 %); I, de <em>Insignificante</em> a <em>Crítico</em> («compromete los objetivos centrales»).</p>
+        <div class="dos-col">
+          <figure class="vineta figura">
+            <h3>Caso 1 · proveedor de servicios gestionados</h3>
+            <div id="m-proveedor" class="g-caja"></div>
+            <figcaption>
+              <span class="insignia n0">Bajo ≤ 4</span> <span class="insignia n1">Medio 5–9</span> <span class="insignia n2">Alto ≥ 10</span>
+              <p class="nota" id="m-proveedor-resumen"></p>
+            </figcaption>
+          </figure>
+          <figure class="vineta figura">
+            <h3>Caso 2 · sistema de gestión académica</h3>
+            <div id="m-academico" class="g-caja"></div>
+            <figcaption>
+              <span class="insignia n0">Bajo 1–5</span> <span class="insignia n1">Medio 6–10</span> <span class="insignia n2">Alto 11–19</span> <span class="insignia n3">Crítico 20–25</span>
+              <p class="nota" id="m-academico-resumen"></p>
+            </figcaption>
+          </figure>
+        </div>
+        <p class="nota">Número arriba: P × I. Círculo: cuántos riesgos del caso caen en esa celda. Recuadro punteado: las celdas que valen 10.</p>
+        <div class="vineta destacado">
+          <h3>La misma celda, dos niveles</h3>
+          <p>Un riesgo con P 2 e I 5 vale 10. En el caso 1 eso es <strong>Alto</strong> (R02, falta de patrocinio activo); en el caso 2 es <strong>Medio</strong> (R08 y R11, normativa de datos y fallo de backups). No es un error: cada plan fija su propio apetito de riesgo. Por eso la herramienta no tiene una escala única, sino que cada caso trae la suya y la función <code>nivelDe(valor, escala)</code> la aplica.</p>
+          <p>Con los niveles, cada caso elige una de las cuatro estrategias del PMBOK y la ISO 31000 para amenazas: <strong>evitar</strong>, <strong>transferir</strong>, <strong>mitigar</strong> o <strong>aceptar</strong>. En ambos casos domina mitigar (10 de 12 riesgos).</p>
+        </div>
+      </section>
+
+      <!-- 4 · EVM -->
+      <section id="evm" class="bloque" aria-labelledby="t-evm">
+        <p class="capitulo" aria-hidden="true">Capítulo 4</p>
+        <h2 id="t-evm">Las fórmulas del valor ganado</h2>
+        <p>Datos del ejercicio: 24 puntos de historia (SP, medida relativa del esfuerzo), 8 SP por sprint, 3 sprints de 5.800 USD. El presupuesto total (BAC, <span lang="en">Budget at Completion</span>) es 5.800 × 3 = <strong>17.400 USD</strong>. Al cierre del Sprint 2 el equipo llevaba <strong>14 SP de 16</strong> planeados y había gastado <strong>12.500 USD</strong>.</p>
+        <div class="tabla-desliza">
+          <table class="formulas">
+            <caption>Indicadores al corte del Sprint 2, con las cifras del ejercicio</caption>
+            <thead>
+              <tr><th scope="col">Sigla</th><th scope="col">Qué mide</th><th scope="col">Fórmula</th><th scope="col">Cálculo</th><th scope="col">Resultado</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">PV</th><td>Valor planificado: lo que debía estar hecho</td><td><code>costo por sprint × sprints</code></td><td>5.800 × 2</td><td class="cifra">11.600 USD</td></tr>
+              <tr><th scope="row">EV</th><td>Valor ganado: lo realmente entregado</td><td><code>(SP hechos / SP totales) × BAC</code></td><td>14 / 24 × 17.400</td><td class="cifra">10.150 USD</td></tr>
+              <tr><th scope="row">AC</th><td>Costo real: lo gastado</td><td>dato del seguimiento</td><td>—</td><td class="cifra">12.500 USD</td></tr>
+              <tr><th scope="row">CV</th><td>Variación de costo</td><td><code>EV − AC</code></td><td>10.150 − 12.500</td><td class="cifra negativo">−2.350 USD</td></tr>
+              <tr><th scope="row">SV</th><td>Variación de cronograma</td><td><code>EV − PV</code></td><td>10.150 − 11.600</td><td class="cifra negativo">−1.450 USD</td></tr>
+              <tr><th scope="row">CPI</th><td>Eficiencia de costo: valor por cada dólar</td><td><code>EV / AC</code></td><td>10.150 / 12.500</td><td class="cifra"><span class="foco foco--ambar">ámbar</span> 0,812</td></tr>
+              <tr><th scope="row">SPI</th><td>Eficiencia de cronograma</td><td><code>EV / PV</code></td><td>10.150 / 11.600</td><td class="cifra"><span class="foco foco--ambar">ámbar</span> 0,875</td></tr>
+              <tr><th scope="row">EAC</th><td>Costo final estimado si sigue igual</td><td><code>BAC / CPI</code></td><td>17.400 / 0,812</td><td class="cifra">21.428,57 USD</td></tr>
+              <tr><th scope="row">ETC</th><td>Lo que falta por gastar</td><td><code>EAC − AC</code></td><td>21.428,57 − 12.500</td><td class="cifra">8.928,57 USD <small>calculado aquí</small></td></tr>
+              <tr><th scope="row">VAC</th><td>Desvío al terminar</td><td><code>BAC − EAC</code></td><td>17.400 − 21.428,57</td><td class="cifra negativo">−4.028,57 USD <small>la fuente: 4.029 de sobrecosto (+23,2 %)</small></td></tr>
+              <tr><th scope="row">TCPI</th><td>Eficiencia necesaria en lo que falta para no pasarse</td><td><code>(BAC − EV) / (BAC − AC)</code></td><td>7.250 / 4.900</td><td class="cifra">1,480 <small>calculado aquí</small></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dos-col">
+          <figure class="vineta figura">
+            <h3>Al cierre del Sprint 2 (USD)</h3>
+            <div id="g-corte" class="g-caja"></div>
+            <figcaption class="nota">Se gastó más (AC) de lo que se entregó (EV), y se entregó menos de lo planeado (PV): sobrecosto y retraso a la vez.</figcaption>
+          </figure>
+          <figure class="vineta figura">
+            <h3>Cuatro maneras de proyectar el costo final (USD)</h3>
+            <div id="g-eac" class="g-caja"></div>
+            <figcaption class="nota">Línea vertical: el presupuesto (BAC). Calculado aquí con <code>js/evm.js</code>; la fuente solo publica BAC / CPI y BAC / SPI.</figcaption>
+          </figure>
+        </div>
+        <div class="vineta destacado">
+          <h3>Cómo leerlo</h3>
+          <p>Un CPI de 0,812 dice que cada dólar gastado produjo 0,81 dólares de valor. Un SPI de 0,875 coincide con el rezago de puntos: 14 / 16 = 0,875. Ambos quedan en <strong>ámbar</strong>: el semáforo de la herramienta pone verde desde 1, ámbar entre 0,8 y 1 y rojo por debajo de 0,8. Ese 0,8 no es arbitrario: es el disparador del riesgo R06 del caso 1 («SPI inferior a 0,8»), y así las dos herramientas hablan el mismo idioma.</p>
+          <p>El TCPI de 1,48 (calculado aquí) dice que, para terminar con los 17.400 USD aprobados, cada dólar que queda tendría que rendir 1,48 de valor. Con un equipo que viene rindiendo 0,81, no es realista: por eso el ejercicio concluye que hay que pedir un presupuesto revisado (unos 21.400 USD) o recortar alcance.</p>
+        </div>
+      </section>
+
+      <!-- 5 · ERRATAS -->
+      <section id="erratas" class="bloque" aria-labelledby="t-erratas">
+        <p class="capitulo" aria-hidden="true">Capítulo 5</p>
+        <h2 id="t-erratas">Fe de erratas</h2>
+        <p>Pasar un documento a algo que recalcula obliga a leerlo con lupa. Estas son las incoherencias que se encontraron; la herramienta las explica en su sección <a href="../#erratas">Fe de erratas</a> en vez de esconderlas.</p>
+        <ol class="erratas">
+          <li class="vineta"><h3>«Seis categorías» que son siete</h3><p>El plan del caso 1 anuncia seis categorías y enumera siete (organizacional, técnico, recursos, cronograma, presupuesto, alcance y legal/regulatorio). El tablero usa las siete.</p></li>
+          <li class="vineta"><h3>Un responsable con dos nombres</h3><p>En R03 el registro dice «Equipo de Ingeniería de Red» y el plan de respuesta, «Equipo de Ingeniería». Se muestra el del registro.</p></li>
+          <li class="vineta"><h3>No hay riesgo residual</h3><p>Ningún caso estima P e I después de la respuesta. El «¿qué pasa si…?» deja que el visitante proponga ese dato y lo rotula como hipótesis suya.</p></li>
+          <li class="vineta"><h3>Causa y efecto juntos</h3><p>La fuente documenta descripción, disparador y contingencia, pero no separa causa y efecto. El detalle muestra lo que hay.</p></li>
+          <li class="vineta"><h3>33 % y 66 %</h3><p>La línea base trunca los porcentajes. Los exactos son 33,3 % (8/24) y 66,7 % (16/24); los montos en USD sí están bien.</p></li>
+          <li class="vineta"><h3>«18,8 % más rápido»</h3><p>El ejercicio dice que con CPI 0,812 los recursos se consumen «un 18,8 % más rápido». Es al revés: cada dólar de valor cuesta 1 / 0,812 = 1,232, un <strong>23,2 %</strong> más, la misma cifra que el propio ejercicio da para el sobrecosto final.</p></li>
+          <li class="vineta"><h3>«EAC = BAC / SPI» no es del PMI</h3><p>Se presenta como variante (19.886 USD). Las alternativas habituales son AC + (BAC − EV) / (CPI × SPI) = 22.704 USD, o AC + (BAC − EV) = 19.750 USD si el desvío fue puntual. La herramienta usa BAC / CPI, la que recomienda la fuente.</p></li>
+          <li class="vineta"><h3>El reparto por sprint es un supuesto</h3><p>La fuente solo da el acumulado al Sprint 2 (14 SP y 12.500 USD). Para poder mover cada sprint, la demo lo reparte en partes iguales (7 SP y 6.250 USD). Los indicadores al corte coinciden exactamente.</p></li>
+        </ol>
+      </section>
+
+      <!-- 6 · DISEÑO -->
+      <section id="diseno" class="bloque" aria-labelledby="t-diseno">
+        <p class="capitulo" aria-hidden="true">Capítulo 6</p>
+        <h2 id="t-diseno">Decisiones de diseño</h2>
+        <div class="dos-col">
+          <ul class="decisiones">
+            <li><strong>Dos herramientas, una página.</strong> Riesgos y valor ganado son dos caras del control del proyecto; el umbral SPI 0,8 las conecta.</li>
+            <li><strong>Escala por caso, no global.</strong> El nivel de una celda depende del plan que la define (ver la celda de valor 10).</li>
+            <li><strong>Niveles con color y trama.</strong> Verde liso, ámbar con trama fina, rojo con trama densa y rojo pleno para el nivel máximo, más el texto del nivel: no depende solo del color.</li>
+            <li><strong>Semáforo con forma.</strong> Verde círculo, ámbar cuadrado, rojo rombo, para quien no distingue esos colores.</li>
+            <li><strong>Gráficas en SVG propio, sin librerías.</strong> Toman los colores de las variables CSS, así cambian con el tema, y cada una tiene su tabla de datos o su descripción accesible.</li>
+            <li><strong>Sin compilación.</strong> HTML, CSS y módulos JS servidos tal cual en GitHub Pages; la lógica está separada de la interfaz para poder probarla con <code>node --test</code>.</li>
+            <li><strong>Onomatopeyas sobrias.</strong> «¡PLAN!» en la portada y un grito en el simulador que cambia con el diagnóstico; las animaciones se apagan con <code>prefers-reduced-motion</code>.</li>
+          </ul>
+          <div>
+            <figure class="vineta figura">
+              <h3>Paleta «Tinta y trama»</h3>
+              <div class="paleta">
+                <span style="--c:#F9F9F7">Papel<br><code>#F9F9F7</code></span>
+                <span style="--c:#0A090A" class="osc">Tinta<br><code>#0A090A</code></span>
+                <span style="--c:#CB433E" class="osc">Rojo<br><code>#CB433E</code></span>
+                <span style="--c:#438FB8" class="osc">Cian<br><code>#438FB8</code></span>
+              </div>
+              <figcaption class="nota">Rojo para lo que se gasta y lo que alarma; cian para el valor ganado, el dato «frío».</figcaption>
+            </figure>
+            <figure class="vineta figura">
+              <h3>Muestras de los niveles y el semáforo</h3>
+              <div class="muestras">
+                <span class="muestra-nivel n0">Bajo</span>
+                <span class="muestra-nivel n1">Medio</span>
+                <span class="muestra-nivel n2">Alto</span>
+                <span class="muestra-nivel n3">Crítico</span>
+              </div>
+              <p class="muestras-foco"><span class="foco foco--verde">≥ 1</span> <span class="foco foco--ambar">0,8 – 1</span> <span class="foco foco--rojo">&lt; 0,8</span></p>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7 · LÍMITES -->
+      <section id="limites" class="bloque" aria-labelledby="t-limites">
+        <p class="capitulo" aria-hidden="true">Capítulo 7</p>
+        <h2 id="t-limites">Limitaciones</h2>
+        <ul class="limites">
+          <li><strong>Es una herramienta didáctica.</strong> Reproduce dos casos y un ejercicio; no reemplaza un software de gestión de proyectos ni guarda datos propios.</li>
+          <li><strong>P e I son juicios, no mediciones.</strong> La matriz ordena opiniones expertas en una escala ordinal: multiplicarlas es la convención del caso, no una magnitud física.</li>
+          <li><strong>El riesgo residual es del visitante.</strong> Como la fuente no lo trae, cualquier «después» de la simulación es una hipótesis.</li>
+          <li><strong>El EVM supone una línea base lineal</strong> (el mismo costo en cada sprint) y que todos los puntos de historia valen lo mismo, como el ejercicio.</li>
+          <li><strong>El reparto por sprint es un supuesto</strong> de la demo; solo el acumulado al Sprint 2 es dato.</li>
+          <li><strong>EAC = BAC / CPI supone que la eficiencia no cambia.</strong> Si el sobrecosto fue puntual, el costo final sería menor (19.750 USD); si se combina con el retraso, mayor (22.704 USD).</li>
+          <li><strong>Los casos están anonimizados</strong> y el texto extraído de los trabajos no se publica.</li>
+        </ul>
+      </section>
+
+      <!-- 8 · FUENTES -->
+      <section id="fuentes" class="bloque" aria-labelledby="t-fuentes">
+        <p class="capitulo" aria-hidden="true">Capítulo 8</p>
+        <h2 id="t-fuentes">Fuentes</h2>
+        <ul class="fuentes">
+          <li>Project Management Institute. (2021). <em>A guide to the project management body of knowledge (PMBOK Guide)</em> (7.ª ed.). PMI.</li>
+          <li>Project Management Institute. (2017). <em>A guide to the project management body of knowledge (PMBOK Guide)</em> (6.ª ed.). PMI.</li>
+          <li>Project Management Institute. (2019). <em>The standard for risk management in portfolios, programs, and projects</em>. PMI.</li>
+          <li>Project Management Institute. (2011). <em>Practice standard for earned value management</em> (2.ª ed.). PMI.</li>
+          <li>International Organization for Standardization. (2018). <em>ISO 31000:2018 Risk management — Guidelines</em>. ISO. <a href="https://www.iso.org/standard/65694.html">iso.org/standard/65694.html</a></li>
+          <li>Schwaber, K. y Sutherland, J. (2020). <em>The Scrum Guide</em>. <a href="https://scrumguides.org/">scrumguides.org</a></li>
+          <li>Hillson, D. y Simon, P. (2012). <em>Practical project risk management: The ATOM methodology</em> (2.ª ed.). Management Concepts.</li>
+          <li>Kerzner, H. (2022). <em>Project management: A systems approach to planning, scheduling, and controlling</em> (13.ª ed.). Wiley.</li>
+          <li>Trabajos académicos de Ingeniería de Sistemas, Universidad ECCI (2026): plan de gestión de riesgos bajo PMI e ISO 31000; taller de construcción de la matriz de riesgos en proyectos TIC; ejercicio de estimación y control con EVM. Casos anonimizados.</li>
+        </ul>
+      </section>
+
+      <a class="volver" href="../">← Volver a «Control de proyectos TIC»</a>
+    </div>
+  </main>
+
+  <footer class="pie">
+    <div class="envoltura">
+      <p class="creditos"><a href="https://github.com/ale0009" target="_blank" rel="noopener">Mario Puerta «ale0009»</a> × <a href="https://www.linkedin.com/in/davidalexanderrinconcorredorkuronoma/" target="_blank" rel="noopener">David Rincón «Kuronoma»</a> · <a href="#">Portafolio</a></p>
+      <p class="nota">Los nombres de las organizaciones de los casos se anonimizaron. Código bajo licencia MIT.</p>
+    </div>
+  </footer>
+</body>
+</html>
